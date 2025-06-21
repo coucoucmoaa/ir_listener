@@ -64,6 +64,9 @@ int main() {
                 if (!buffer.empty()) {
                     if (buffer != "0x0") {
                         std::cout << "Received IR code: " << buffer << std::endl;
+                        if (buffer == "0x5010401") {
+                            system("python3 src/test.py ctrl w");
+                        }
                     }
                     buffer.clear();
                 }
