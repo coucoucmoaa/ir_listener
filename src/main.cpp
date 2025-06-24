@@ -12,7 +12,7 @@
 
 int main() {
     try {
-        Core core = Core();
+        Core core = Core("linux");
         core.loop();
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;

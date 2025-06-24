@@ -8,12 +8,13 @@
 #ifndef CORE_HPP_
 #define CORE_HPP_
 
-#include "Linux.hpp"
+// #include "Linux.hpp"
 #include "Profil.hpp"
+#include "ISerialBackend.hpp"
 
 class Core {
     public:
-        Core(std::string os = "Linux");
+        Core(std::string os);
         ~Core();
         void loop();
         // void writeConfig();
@@ -21,7 +22,8 @@ class Core {
 
     protected:
         int _serialPort = -1;;
-        Linux _linuxConfig;
+        // Linux _linuxConfig;
+        ISerialBackend* _backend;
         // Windows _windowsConfig;
         // Profil _profil;
     private:

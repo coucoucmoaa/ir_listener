@@ -6,30 +6,42 @@
 */
 
 #include "Core.hpp"
+#include "SerialFactory.hpp"
 
-Core::Core(std::string os)
-: _linuxConfig()
-{
-    _serialPort = _linuxConfig.getSerialPin();
+#include "LinuxSerialBackend.hpp"
+#include "WindowsSerialBackend.hpp"
+
+Core::Core(std::string os) {
+    // Implémentation du constructeur
+    // Par exemple :
+    (void)os; // si tu n'utilises pas encore os, pour éviter warning
+    // ... initialisations
 }
 
-void Core::loop()
-{
+void Core::loop() {
+    ISerialBackend* serial = createSerialBackend();
+
+#ifdef _WIN32
+    const std::string portName = "COM3";
+#else
+    const std::string portName = "/dev/ttyUSB0";
+#endif
+
+    if (!serial || !serial->openPort(portName)) {
+        std::cerr << "Failed to open serial port: " << portName << std::endl;
+        delete serial;
+        return;
+    }
+
     std::string buffer;
     char ch;
     std::cout << "Listening for IR codes...\n";
 
     while (true) {
-        int n = read(_serialPort, &ch, 1);
-        if (n > 0) {
-            if (ch == '\n') {
+        if (serial->readChar(ch) > 0) {
+            if (ch == '\n' || ch == '\r') {
                 if (!buffer.empty()) {
-                    if (buffer != "0x0") {
-                        std::cout << "Received IR code: " << buffer << std::endl;
-                        if (buffer == "0x5010401") {
-                            system("python3 src/test.py ctrl w");
-                        }
-                    }
+                    std::cout << "Received IR code: " << buffer << std::endl;
                     buffer.clear();
                 }
             } else if (isprint(ch)) {
@@ -37,7 +49,9 @@ void Core::loop()
             }
         }
     }
-    close(_serialPort);
+
+    serial->closePort();
+    delete serial;
 }
 
 Core::~Core()
