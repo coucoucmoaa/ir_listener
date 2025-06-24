@@ -17,6 +17,8 @@ RM = rm -f
 
 SRC		=	src/main.cpp \
 			src/Profil.cpp \
+			src/Linux.cpp \
+			src/Core.cpp \
 
 NAME	=	hub_ir
 
