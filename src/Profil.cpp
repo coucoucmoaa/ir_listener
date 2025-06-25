@@ -7,11 +7,11 @@
 
 #include "Profil.hpp"
 
-Profil::Profil(std::string name) : _name(name)
-{
+// Profil::Profil(std::string name) : _name(name)
+// {
 
-}
+// }
 
-Profil::~Profil()
-{
-}
+// Profil::~Profil()
+// {
+// }

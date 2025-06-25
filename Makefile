@@ -20,6 +20,7 @@ SRC		=	src/main.cpp \
 			src/Core.cpp \
 			src/WindowsSerialBackend.cpp \
 			src/LinuxSerialBackend.cpp \
+			src/Config.cpp \
 
 NAME	=	hub_ir
 
