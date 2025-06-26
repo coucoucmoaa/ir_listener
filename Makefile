@@ -21,13 +21,18 @@ SRC		=	src/main.cpp \
 			src/WindowsSerialBackend.cpp \
 			src/LinuxSerialBackend.cpp \
 			src/Config.cpp \
+			src/UI/Ui.cpp \
+			src/UI/components/AButton.cpp \
+			src/UI/components/NewConfigButton.cpp \
 
 NAME	=	hub_ir
 
 GHC 	= 	g++
 
+FLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
 all:
-	@$(GHC) $(SRC) -o $(NAME) -g \
+	@$(GHC) $(SRC) -o $(NAME) -g $(FLAGS)\
 	&& $(ECHO) $(BOLD) $(GREEN)"\n► BUILD SUCCESS !"$(DEFAULT) \
 	|| ($(ECHO) $(BOLD) $(RED)"\n► BUILD FAILED"$(DEFAULT) && exit 1)
 

@@ -58,12 +58,12 @@ const std::unordered_map<std::string, std::string>& Config::getMap() const {
 }
 
 
-void Config::ExtractMap(const std::string& filename) {
+bool Config::ExtractMap(const std::string& filename) {
     std::unordered_map<std::string, std::string> map;
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Could not open file: " << filename << "\n";
-        return;
+        return false;
     }
 
     std::string line;
@@ -90,6 +90,7 @@ void Config::ExtractMap(const std::string& filename) {
     }
 
     _irToAction = map;
+    return true;
 }
 
 void Config::showConfig() {

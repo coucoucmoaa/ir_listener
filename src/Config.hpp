@@ -39,7 +39,7 @@ class Config {
         void listenAndMap(const std::string &irCode);
         void saveToJson(const std::string& filename) const;
         const std::unordered_map<std::string, std::string>& getMap() const;
-        void ExtractMap(const std::string& filename);
+        bool ExtractMap(const std::string& filename);
         void showConfig();
         ~Config();
         void pressKey(const std::vector<std::string>& keys);

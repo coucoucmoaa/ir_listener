@@ -163,10 +163,14 @@ void Core::loadConfig(const std::string& configName) {
     std::cout << "Loading configuration: " << configName << std::endl;
     // _config.setMap(_config.getMap()); // Simule le chargement de la configuration
     // std::cout << "Configuration loaded." << std::endl;
-    _config.ExtractMap("configs/" + configName + ".json");
-    std::cout << "Configuration " << configName << " loaded." << std::endl;
-    for (const auto& [key, value] : _config.getMap()) {
-        std::cout << "IR Code: " << key << " -> Action: " << value << std::endl;
+    if(_config.ExtractMap("configs/" + configName + ".json")){
+        for (const auto& [key, value] : _config.getMap()) {
+            std::cout << "IR Code: " << key << " -> Action: " << value << std::endl;
+        }
+        std::cout << "Configuration " << configName << " loaded." << std::endl;
+    } else {
+        std::cerr << "Failed to load configuration: " << configName << std::endl;
+        return;
     }
 }
 
