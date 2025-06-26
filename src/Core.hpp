@@ -12,6 +12,7 @@
 #include "Profil.hpp"
 #include "ISerialBackend.hpp"
 #include "Config.hpp"
+#include <functional>
 
 class Core {
     public:
@@ -21,6 +22,8 @@ class Core {
         void createConfig(ISerialBackend* serial, const std::string& configName);
         void loadConfig(const std::string& configName);
         void startListening(ISerialBackend* serial);
+        void displayActions();
+        void debug(ISerialBackend* serial);
 
         // void saveConfig();
         // void removeConfig();
@@ -35,6 +38,9 @@ class Core {
         // Linux _linuxConfig;
         ISerialBackend* _backend;
         Config _config;
+        std::unordered_map<std::string, std::function<void()>> _actions;
+        bool _stopListening = false;
+        std::string cleanBuffer(const std::string& buffer);
         // Windows _windowsConfig;
         // std::vector<std::string> _configs;
         // std::string _currentConfig;

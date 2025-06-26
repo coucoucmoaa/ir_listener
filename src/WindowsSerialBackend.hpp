@@ -16,7 +16,8 @@
 
 class WindowsSerialBackend : public ISerialBackend {
 public:
-    WindowsSerialBackend(const std::string& port);
+    WindowsSerialBackend();
+    explicit WindowsSerialBackend(const std::string& port);
     ~WindowsSerialBackend();
 
     bool openPort(const std::string& portName) override;
@@ -25,7 +26,7 @@ public:
 
 private:
     #ifdef _WIN32
-    HANDLE hSerial;
+    HANDLE _hSerial;
     #endif
     std::string _portName;
 };

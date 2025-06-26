@@ -8,7 +8,10 @@
 #ifndef LINUXSERIALBACKEND_HPP_
 #define LINUXSERIALBACKEND_HPP_
 
+#ifdef __linux__
+
 #include "ISerialBackend.hpp"
+
 #include <termios.h>
 
 class LinuxSerialBackend : public ISerialBackend {
@@ -24,5 +27,7 @@ private:
     int _serialFd;
     struct termios _tty;
 };
+
+#endif // __linux__
 
 #endif

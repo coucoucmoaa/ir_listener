@@ -14,11 +14,34 @@
 // #include <sys/wait.h>
 // #include <chrono>/
 
-Core::Core(std::string os) : _config("default_config"){
+Core::Core(std::string os) : _config("default_config"), _stopListening(false)
+{
     // Implémentation du constructeur
     // Par exemple :
     (void)os; // si tu n'utilises pas encore os, pour éviter warning
     // ... initialisations
+   _actions = {
+    {"0", []() { std::cout << "Action NONE selected." << std::endl; }},
+    {"2", []() { system("xdotool click 1"); }},  // Clic gauche
+    {"3", []() { system("xdotool click 3"); }},  // Clic droit
+    {"4", []() { system("xdotool key ctrl+w"); }},  // Fermer onglet
+    {"5", []() { system("xdotool key ctrl+t"); }},  // Nouvel onglet
+    {"6", []() { system("xdg-open https://www.youtube.com &"); }},
+    {"7", []() { system("xdg-open https://www.twitch.tv &"); }},
+    {"8", []() { system("xdg-open https://www.netflix.com &"); }},
+    {"9", []() { system("xdg-open https://discord.com/app &"); }},
+    {"10", []() { system("xdg-open https://zoro.to &"); }},  // Exemple site anime
+    {"11", []() { system("amixer set Master 5%+"); }},
+    {"12", []() { system("amixer set Master 5%-"); }},
+    {"13", []() { system("amixer set Master toggle"); }},  // Mute / Unmute
+    {"14", []() { system("xdotool key space"); }},  // Pause / Play
+    {"15", []() { system("xdotool key f"); }},      // Plein écran
+    {"16", []() { system("xdotool key ctrl+Tab"); }}  // Changer d'onglet
+};
+    _actions["1"] = [&]() {
+        std::cout << "Stopping listener..." << std::endl;
+        _stopListening = true;
+    };
 }
 
 void Core::loop() {
@@ -50,6 +73,10 @@ void Core::loop() {
         // }
         if (command.rfind("nc ", 0) == 0 && command.size() > 3) {
             createConfig(serial, command.substr(3)); // tout après "nc "
+        } else if (command == "debug"){
+            debug(serial);
+        } else if (command == "action"){
+            displayActions(); // Implémentation de la fonction d'affichage des actions
         } else if (command == "sc") {
             _config.showConfig(); // Implémentation de la fonction d'affichage de configuration
         } else if (command.rfind("lc ", 0) == 0 && command.size() > 3) {
@@ -123,9 +150,41 @@ void Core::loadConfig(const std::string& configName) {
     }
 }
 
+void Core::displayActions() {
+    std::cout << "Available actions:\n";
+    std::cout << "0. NONE\n";
+    std::cout << "1. STOP\n";
+    std::cout << "2. MOUSELEFTC\n";
+    std::cout << "3. MOUSERIGHTC\n";
+    std::cout << "4. CTRLW\n";
+    std::cout << "5. CTRLT\n";
+    std::cout << "6. YOUTUBE\n";
+    std::cout << "7. TWITCH\n";
+    std::cout << "8. NETFLIX\n";
+    std::cout << "9. DISCORD\n";
+    std::cout << "10. ANIME\n";
+    std::cout << "11. VOLUMEUP\n";
+    std::cout << "12. VOLUMEDOWN\n";
+    std::cout << "13. VOLUMEMUTE\n";
+    std::cout << "14. PAUSE\n";
+    std::cout << "15. FULLSCREEN\n";
+    std::cout << "16. TOGGLE\n";
+    std::cout << "Please select an action by number." << std::endl;     
+}
+
+std::string Core::cleanBuffer(const std::string& buffer) {
+    std::string result;
+    for (char c : buffer) {
+        if (isprint(static_cast<unsigned char>(c))) {
+            result += c;
+        }
+    }
+    return result;
+}
+
 void Core::startListening(ISerialBackend* serial) {
     // Implémentation de la fonction de démarrage de l'écoute
-    std::cout << "Starting listening..." << std::endl;
+    std::cout << "Starting to listen for IR codes..." << std::endl;
     char ch;
     std::string buffer;
 
@@ -138,7 +197,37 @@ void Core::startListening(ISerialBackend* serial) {
                         continue;
                     }
                     if (buffer != "0x0") {
-                        
+                        auto it = _config.getMap().find(buffer);
+                        if (it != _config.getMap().end()) {
+                            auto action = _actions.find(it->second);
+                            if (action != _actions.end()) {
+                                action->second();
+                                std::cout << "Action executed for IR code: " << buffer << std::endl;
+                            }
+                        }
+                    }
+                    buffer.clear();
+                }
+            } else if (isprint(ch)) {
+                buffer += ch;
+            }
+        }
+    }
+}
+
+void Core::debug(ISerialBackend* serial) {
+    char ch;
+    std::string buffer;
+
+    while (true)
+    {
+        if (serial->readChar(ch) > 0) {
+            if (ch == '\n' || ch == '\r') {
+                if (!buffer.empty()) {
+                    if (buffer != "0x0") {
+                        std::cout << "Debug: Received IR code: " << buffer << std::endl;
+                    } else {
+                        std::cout << "Debug: Received empty IR code." << std::endl;
                     }
                     buffer.clear();
                 }

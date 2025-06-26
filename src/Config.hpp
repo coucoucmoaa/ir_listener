@@ -36,7 +36,7 @@ class Config {
         Config(const std::string& name);
         void listenAndMap(const std::string &irCode);
         void saveToJson(const std::string& filename) const;
-        std::unordered_map<std::string, std::string> getMap() const;
+        const std::unordered_map<std::string, std::string>& getMap() const;
         void ExtractMap(const std::string& filename);
         void showConfig();
         ~Config();
@@ -46,6 +46,7 @@ class Config {
     private:
         std::unordered_map<std::string, std::string> _irToAction;
         std::string _name;
+        Action _action;
 };
 
 #endif /* !CONFIG_HPP_ */

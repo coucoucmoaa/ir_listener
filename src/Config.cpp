@@ -49,7 +49,7 @@ void Config::saveToJson(const std::string& filename) const {
     std::cout << "Configuration saved to " << filename << "\n";
 }
 
-std::unordered_map<std::string, std::string> Config::getMap() const {
+const std::unordered_map<std::string, std::string>& Config::getMap() const {
     return _irToAction;
 }
 
