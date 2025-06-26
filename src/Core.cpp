@@ -13,13 +13,32 @@
 // #include <unistd.h>
 // #include <sys/wait.h>
 // #include <chrono>/
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 Core::Core(std::string os) : _config("default_config"), _stopListening(false)
 {
-    // Implémentation du constructeur
-    // Par exemple :
-    (void)os; // si tu n'utilises pas encore os, pour éviter warning
-    // ... initialisations
+    (void)os;
+    #ifdef _WIN32
+
+    _actions = {
+    {"0", [this]() { std::cout << "Action NONE selected." << std::endl; }},
+    {"4", [this]() { _config.pressKey({"ctrl", "w"}); }},
+    {"5", [this]() { _config.pressKey({"ctrl", "t"}); }},
+    {"14", [this]() { _config.pressKey({"space"}); }},
+    {"15", [this]() { _config.pressKey({"f"}); }},
+    {"13", [this]() { _config.pressKey({"volumemute"}); }},
+    {"11", [this]() { _config.pressKey({"volumeup"}); }},
+    {"12", [this]() { _config.pressKey({"volumedown"}); }},
+    {"6", [this]() { _config.openSite("https://youtube.com"); }},
+    {"7", [this]() { _config.openSite("https://twitch.tv"); }},
+    {"8", [this]() { _config.openSite("https://netflix.com"); }},
+    {"9", [this]() { _config.openSite("https://discord.com"); }},
+    {"10", [this]() { _config.openSite("https://myanimelist.net"); }}
+};
+    #endif
+    #ifdef __linux__
    _actions = {
     {"0", []() { std::cout << "Action NONE selected." << std::endl; }},
     {"2", []() { system("xdotool click 1"); }},  // Clic gauche
@@ -38,6 +57,7 @@ Core::Core(std::string os) : _config("default_config"), _stopListening(false)
     {"15", []() { system("xdotool key f"); }},      // Plein écran
     {"16", []() { system("xdotool key ctrl+Tab"); }}  // Changer d'onglet
 };
+#endif
     _actions["1"] = [&]() {
         std::cout << "Stopping listener..." << std::endl;
         _stopListening = true;

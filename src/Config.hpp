@@ -10,6 +10,8 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
+
 
 enum class Action {
     NONE,
@@ -40,6 +42,8 @@ class Config {
         void ExtractMap(const std::string& filename);
         void showConfig();
         ~Config();
+        void pressKey(const std::vector<std::string>& keys);
+        void openSite(const std::string& url);
 
         
     protected:
@@ -47,6 +51,7 @@ class Config {
         std::unordered_map<std::string, std::string> _irToAction;
         std::string _name;
         Action _action;
+        
 };
 
 #endif /* !CONFIG_HPP_ */

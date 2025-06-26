@@ -13,6 +13,10 @@
 #include <map>
 #include <algorithm>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 Config::Config(const std::string& name)
     : _name(name) {}
 
@@ -98,6 +102,48 @@ void Config::showConfig() {
         std::cout << "  " << key << " -> " << value << "\n";
     }
 }
+
+#ifdef _WIN32
+void Config::pressKey(const std::vector<std::string>& keys) {
+    
+    std::vector<INPUT> inputs;
+
+    std::unordered_map<std::string, WORD> keyMap = {
+        {"ctrl", VK_CONTROL}, {"alt", VK_MENU}, {"shift", VK_SHIFT},
+        {"space", VK_SPACE}, {"enter", VK_RETURN}, {"esc", VK_ESCAPE},
+        {"f", 0x46}, {"t", 0x54}, {"w", 0x57},
+        {"volumemute", VK_VOLUME_MUTE}, {"volumeup", VK_VOLUME_UP}, {"volumedown", VK_VOLUME_DOWN},
+        // Ajoute les autres touches ici si nécessaire
+    };
+
+    // 1. Appui de toutes les touches (modificateurs d'abord)
+    for (const auto& key : keys) {
+        if (keyMap.find(key) != keyMap.end()) {
+            INPUT input = {0};
+            input.type = INPUT_KEYBOARD;
+            input.ki.wVk = keyMap[key];
+            inputs.push_back(input);
+        }
+    }
+
+    // 2. Relâchement dans l'ordre inverse
+    for (auto it = keys.rbegin(); it != keys.rend(); ++it) {
+        if (keyMap.find(*it) != keyMap.end()) {
+            INPUT input = {0};
+            input.type = INPUT_KEYBOARD;
+            input.ki.wVk = keyMap[*it];
+            input.ki.dwFlags = KEYEVENTF_KEYUP;
+            inputs.push_back(input);
+        }
+    }
+
+    SendInput(inputs.size(), inputs.data(), sizeof(INPUT));
+}
+
+void Config::openSite(const std::string& url) {
+    ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
+#endif
 
 Config::~Config()
 {

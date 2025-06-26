@@ -13,6 +13,7 @@
 #include <windows.h>
 #endif
 #include <string>
+#include <vector>
 
 class WindowsSerialBackend : public ISerialBackend {
 public:

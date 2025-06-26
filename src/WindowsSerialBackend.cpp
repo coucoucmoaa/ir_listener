@@ -66,4 +66,5 @@ void WindowsSerialBackend::closePort() {
         _hSerial = INVALID_HANDLE_VALUE;
     }
 }
+
 #endif

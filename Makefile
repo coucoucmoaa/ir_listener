@@ -45,4 +45,11 @@ fclean:	clean
 	@$(RM) vgcore.*
 	@($(ECHO) $(BOLD) $(GREEN)✓$(LIGHT_BLUE)" FCLEAN "$(DEFAULT))
 
+build:
+	docker build -t hub_ir_win .
+
+ex:
+	docker run --rm -v "$PWD/out:/out" hub_ir_win cp /app/hub_ir.exe /out/
+
+
 re: fclean all
