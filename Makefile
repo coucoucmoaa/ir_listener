@@ -31,6 +31,8 @@ GHC 	= 	g++
 
 FLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
+PWD = $(shell pwd)
+
 all:
 	@$(GHC) $(SRC) -o $(NAME) -g $(FLAGS)\
 	&& $(ECHO) $(BOLD) $(GREEN)"\n► BUILD SUCCESS !"$(DEFAULT) \
@@ -54,7 +56,7 @@ build:
 	docker build -t hub_ir_win .
 
 ex:
-	docker run --rm -v "$PWD/out:/out" hub_ir_win cp /app/hub_ir.exe /out/
+	docker run --rm -v "$(PWD)/out:/out" hub_ir_win cp /app/hub_ir.exe /out/
 
 
 re: fclean all
