@@ -208,7 +208,7 @@ void Core::startListening(ISerialBackend* serial) {
     char ch;
     std::string buffer;
 
-    while (true) {
+    while (!_stopListening) {
         if (serial->readChar(ch) > 0) {
             if (ch == '\n' || ch == '\r') {
                 if (!buffer.empty()) {
