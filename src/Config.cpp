@@ -32,9 +32,40 @@ void Config::listenAndMap(const std::string &irCode) {
 }
 
 void Config::saveToJson(const std::string& filename) const {
+    // Extract directory path from filename
+    std::filesystem::path filePath(filename);
+    std::filesystem::path dirPath = filePath.parent_path();
+    
+    // Create directory if it doesn't exist
+    if (!dirPath.empty()) {
+        try {
+            std::filesystem::create_directories(dirPath);
+        } catch (const std::filesystem::filesystem_error& e) {
+            std::cerr << "Failed to create directory: " << e.what() << "\n";
+            return;
+        }
+    }
+    
+    // Try to open file for writing
     std::ofstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Could not open file for writing: " << filename << "\n";
+        
+        // Additional Windows-specific debugging
+        #ifdef _WIN32
+        DWORD error = GetLastError();
+        std::cerr << "Windows error code: " << error << "\n";
+        
+        // Check if directory exists and is writable
+        std::filesystem::path parentDir = std::filesystem::path(filename).parent_path();
+        if (!parentDir.empty()) {
+            if (!std::filesystem::exists(parentDir)) {
+                std::cerr << "Directory does not exist: " << parentDir << "\n";
+            } else if (!std::filesystem::is_directory(parentDir)) {
+                std::cerr << "Path is not a directory: " << parentDir << "\n";
+            }
+        }
+        #endif
         return;
     }
 
@@ -47,8 +78,15 @@ void Config::saveToJson(const std::string& filename) const {
         first = false;
     }
     file << "\n}\n";
-
-    std::cout << "Configuration saved to " << filename << "\n";
+    
+    file.close(); // Explicitly close the file
+    
+    // Verify the file was written successfully
+    if (std::filesystem::exists(filename)) {
+        std::cout << "Configuration saved to " << filename << "\n";
+    } else {
+        std::cerr << "Failed to save configuration to " << filename << "\n";
+    }
 }
 
 const std::unordered_map<std::string, std::string>& Config::getMap() const {
@@ -61,6 +99,16 @@ bool Config::ExtractMap(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Could not open file: " << filename << "\n";
+        
+        // Additional debugging for Windows
+        #ifdef _WIN32
+        if (!std::filesystem::exists(filename)) {
+            std::cerr << "File does not exist: " << filename << "\n";
+        } else {
+            DWORD error = GetLastError();
+            std::cerr << "Windows error code: " << error << "\n";
+        }
+        #endif
         return false;
     }
 
