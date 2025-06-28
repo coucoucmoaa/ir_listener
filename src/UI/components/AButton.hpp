@@ -8,7 +8,7 @@
 #ifndef BUTTON_HPP_
 #define BUTTON_HPP_
 
-#include <raylib.h>
+#include "../../RaylibSafe.hpp"
 #include <string>
 #include "IButton.hpp"
 

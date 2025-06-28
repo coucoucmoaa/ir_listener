@@ -1,4 +1,5 @@
 #ifdef _WIN32
+#include "WindowsPlatform.hpp"  // Include Windows headers only in .cpp file
 #include "WindowsSerialBackend.hpp"
 #include <iostream>
 

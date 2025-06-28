@@ -6,17 +6,10 @@
 */
 
 #include "Core.hpp"
+#include "RaylibSafe.hpp"
 #include "SerialFactory.hpp"
-
 #include "LinuxSerialBackend.hpp"
 #include "WindowsSerialBackend.hpp"
-// #include <unistd.h>
-// #include <sys/wait.h>
-// #include <chrono>/
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#include <raylib.h>
 
 Core::Core(std::string os) : _config("default_config"), _stopListening(false)
 {

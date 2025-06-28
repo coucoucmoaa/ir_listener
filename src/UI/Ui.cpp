@@ -7,7 +7,7 @@
 
 #include "Ui.hpp"
 #include <iostream>
-#include <raylib.h>
+#include "../RaylibSafe.hpp"
 #include <unordered_map>
 #include "ButtonFactory.hpp"
 #include "components/TextBox.hpp"

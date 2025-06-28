@@ -33,6 +33,10 @@ RUN x86_64-w64-mingw32-g++ -static \
     -o hub_ir.exe \
     src/main.cpp src/Profil.cpp src/Core.cpp src/WindowsSerialBackend.cpp src/Config.cpp \
     src/UI/Ui.cpp src/UI/components/AButton.cpp src/UI/components/NewConfigButton.cpp \
+    src/UI/components/LoadConfigButton.cpp src/UI/components/ExitButton.cpp \
+    src/UI/components/ActionButton.cpp src/UI/components/ShowConfigButton.cpp \
+    src/UI/components/StartButton.cpp src/UI/ButtonFactory.cpp src/UI/components/DefaultButton.cpp \
+    src/UI/components/TextBox.cpp \
     -Iinclude -I${RAYLIB_INCLUDE_PATH} \
     -L${RAYLIB_LIB_PATH} -lraylib -lwinmm -lgdi32 -lsetupapi
 

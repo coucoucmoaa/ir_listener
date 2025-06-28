@@ -9,11 +9,13 @@
 #define WINDOWSSERIALBACKEND_HPP_
 
 #include "ISerialBackend.hpp"
-#ifdef _WIN32
-#include <windows.h>
-#endif
 #include <string>
 #include <vector>
+
+// Forward declarations to avoid including Windows headers in header file
+#ifdef _WIN32
+using HANDLE = void*;
+#endif
 
 class WindowsSerialBackend : public ISerialBackend {
 public:

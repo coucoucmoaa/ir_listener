@@ -7,7 +7,7 @@
 
 #ifndef TEXTBOX_HPP_
 #define TEXTBOX_HPP_
-#include <raylib.h>
+#include "../../RaylibSafe.hpp"
 #include <string>
 
 class TextBox {

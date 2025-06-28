@@ -7,7 +7,7 @@
 
 #ifndef IBUTTON_HPP_
 #define IBUTTON_HPP_
-#include <raylib.h>
+#include "../../RaylibSafe.hpp"
 #include "../../Core.hpp"
 
 class IButton {

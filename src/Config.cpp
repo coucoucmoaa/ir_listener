@@ -13,9 +13,7 @@
 #include <map>
 #include <algorithm>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#include "WindowsPlatform.hpp"
 
 Config::Config(const std::string& name)
     : _name(name) {}

@@ -7,7 +7,6 @@
 
 #include "AButton.hpp"
 #include <iostream>
-#include <raylib.h>
 
 void AButton::draw() {
     Vector2 position = { static_cast<float>(_x), static_cast<float>(_y) };
