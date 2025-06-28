@@ -24,6 +24,14 @@ SRC		=	src/main.cpp \
 			src/UI/Ui.cpp \
 			src/UI/components/AButton.cpp \
 			src/UI/components/NewConfigButton.cpp \
+			src/UI/ButtonFactory.cpp \
+			src/UI/components/DefaultButton.cpp \
+			src/UI/components/TextBox.cpp \
+			src/UI/components/LoadConfigButton.cpp \
+			src/UI/components/ExitButton.cpp \
+			src/UI/components/ActionButton.cpp \
+			src/UI/components/ShowConfigButton.cpp \
+			src/UI/components/StartButton.cpp \
 
 NAME	=	hub_ir
 

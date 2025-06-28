@@ -93,15 +93,21 @@ bool Config::ExtractMap(const std::string& filename) {
     return true;
 }
 
-void Config::showConfig() {
-    std::cout << "Current configuration:\n";
+void Config::showConfig(std::vector<std::string> &logs) const {
+    logs.clear();
+    logs.push_back("Current configuration:");
     if (_irToAction.empty()) {
-        std::cout << "No config loaded.\n";
+        logs.push_back("No config loaded.");
         return;
     }
     for (const auto& [key, value] : _irToAction) {
-        std::cout << "  " << key << " -> " << value << "\n";
+        logs.push_back("  " + key + " -> " + value);
     }
+}
+
+void Config::addMapping(const std::string& irCode, const std::string& action) {
+    _irToAction[irCode] = action;
+    // std::cout << "Added mapping: " << irCode << " -> " << action << "\n";
 }
 
 #ifdef _WIN32

@@ -36,7 +36,19 @@ Rectangle AButton::getRectangle() const {
     return { static_cast<float>(_x), static_cast<float>(_y), static_cast<float>(_width), static_cast<float>(_height) };
 }
 
-void AButton::function(Core core) const
+void AButton::function(Core& core, const std::string& input) const
 {
     std::cout << "Button clicked: " << _label << std::endl;
+}
+
+bool AButton::isClickable() const {
+    return false;
+}
+
+std::string AButton::getLabel() const {
+    return _label;
+}
+
+bool AButton::isTextBox() const {
+    return false; // This button triggers a textbox for input
 }

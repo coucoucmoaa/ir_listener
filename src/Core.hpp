@@ -13,6 +13,7 @@
 #include "ISerialBackend.hpp"
 #include "Config.hpp"
 #include <functional>
+#include <memory>
 
 class Core {
     public:
@@ -24,6 +25,13 @@ class Core {
         void startListening(ISerialBackend* serial);
         void displayActions();
         void debug(ISerialBackend* serial);
+        ISerialBackend *getSerial();
+        std::function<void()> deferredAction = nullptr;
+        std::vector<std::string> logs;
+        bool isMapping = false;
+        std::string inputActionName;
+        bool isWaitingForInput = false;
+        void showConfig();
 
         // void saveConfig();
         // void removeConfig();
@@ -34,13 +42,16 @@ class Core {
 
 
     protected:
-        int _serialPort = -1;;
+        ISerialBackend* _serial;
         // Linux _linuxConfig;
         ISerialBackend* _backend;
         Config _config;
         std::unordered_map<std::string, std::function<void()>> _actions;
         bool _stopListening = false;
         std::string cleanBuffer(const std::string& buffer);
+        std::string currentIRcode;
+        std::string configName;
+
         // Windows _windowsConfig;
         // std::vector<std::string> _configs;
         // std::string _currentConfig;

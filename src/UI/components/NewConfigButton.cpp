@@ -17,11 +17,20 @@ NewConfigButton::NewConfigButton(int x, int y, int width, int height, std::strin
     }
 
 
-void NewConfigButton::function(Core core) const
+void NewConfigButton::function(Core& core, const std::string& input) const
 {
-    core.loadConfig("default_config");
+    core.createConfig(core.getSerial(), input);
+    // std::cout << input << std::endl;
+}
+
+bool NewConfigButton::isClickable() const {
+    return true;
 }
 
 NewConfigButton::~NewConfigButton() {
     // Destructor implementation if needed
+}
+
+bool NewConfigButton::isTextBox() const {
+    return true; // This button triggers a textbox for input
 }

@@ -9,7 +9,8 @@
 #include <iostream>
 #include <raylib.h>
 #include <unordered_map>
-#include "components/NewConfigButton.hpp"
+#include "ButtonFactory.hpp"
+#include "components/TextBox.hpp"
 
 Ui::Ui() : _mouse(), _width(800), _height(600), _core("linux")
 {
@@ -38,34 +39,107 @@ Ui::Ui() : _mouse(), _width(800), _height(600), _core("linux")
             x += buttonWidth + spacingX;
         }
 
-        std::string label = map["Button " + std::to_string(i + 1)];
-        _buttons.push_back(std::make_shared<NewConfigButton>(x, y, buttonWidth, buttonHeight, label));
+        std::string labelKey = "Button " + std::to_string(i + 1);
+    std::string label = map[labelKey];
+    _buttons.push_back(createButton(label, x, y, buttonWidth, buttonHeight, label));
         y += buttonHeight + spacingY;
     }
     InitWindow(_width, _height, "Ir_receiver");
     SetTargetFPS(60);
 }
 
+std::unique_ptr<TextBox> activeTextbox = nullptr;
+std::shared_ptr<IButton> clickedButton = nullptr;
+InputContext inputContext = InputContext::None;
+
+
 void Ui::loop()
 {
-    while (!WindowShouldClose())  // Ferme avec ESC ou la croix
-    {
-
-
+    while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        for(auto &button : _buttons) {
+        // Dessin et gestion des boutons
+        for (auto& button : _buttons) {
             button->draw();
-            if (button->isClicked()) {
-                button->function(_core);
-                std::cout << "Button clicked!" << std::endl;
+
+            if (button->isClicked() && button->isClickable()) {
+                if (button->isTextBox()) {
+                    std::string label = (button->getLabel() == "New Config")
+                        ? "Enter Config name:" : "Input text:";
+
+                    activeTextbox = std::make_unique<TextBox>(100, 100, 300, 40, label);
+                    clickedButton = button;
+                    activeTextbox->justOpenTextBox(true);
+                    inputContext = InputContext::ButtonClick;
+                } else {
+                    button->function(_core);
+                }
             }
+        }
+
+        // Si on attend une saisie d'action (ex: après mapping IR)
+        if (_core.isWaitingForInput && !activeTextbox) {
+            activeTextbox = std::make_unique<TextBox>(100, 100, 300, 40, "Enter action name:");
+            activeTextbox->justOpenTextBox(true);
+            inputContext = InputContext::ActionName;
+        }
+
+        // Gestion unique textbox
+        if (activeTextbox) {
+            activeTextbox->update();
+            activeTextbox->draw();
+
+            // Validation avec Enter
+            if (IsKeyPressed(KEY_ENTER)) {
+                if (inputContext == InputContext::ButtonClick && clickedButton) {
+                    clickedButton->function(_core, activeTextbox->text);
+                    clickedButton.reset();
+                } else if (inputContext == InputContext::ActionName) {
+                    _core.inputActionName = activeTextbox->text;
+                    _core.isWaitingForInput = false;
+                }
+                activeTextbox.reset();
+            }
+
+            // Clic en dehors pour fermer textbox
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+                !activeTextbox->isMouseInside() &&
+                !activeTextbox->justOpenedTextbox) {
+                activeTextbox.reset();
+                clickedButton.reset();
+                _core.isWaitingForInput = false;
+            }
+
+            if (activeTextbox && activeTextbox->justOpenedTextbox) {
+                activeTextbox->justOpenTextBox(false);
+            }
+        }
+
+        if (_core.isMapping && _core.deferredAction) {
+            _core.deferredAction(); // exécution incrémentale
+        }
+
+        // Affichage des logs graphiques sur la moitié droite
+        Color terminalBackground = { 230, 230, 230, 255 }; // gris doux
+        DrawRectangle(_width / 2, 0, _width / 2, _height, terminalBackground);
+
+        DrawText("Log Output", _width / 2 + 20, 10, 22, BLACK);
+
+        float logX = _width / 2 + 20;
+        float logY = 40;
+        int fontSize = 20;
+        int lineSpacing = fontSize + 4;
+
+        for (const auto& msg : _core.logs) {
+            DrawText(msg.c_str(), logX, logY, fontSize, DARKGRAY);
+            logY += lineSpacing;
         }
 
         EndDrawing();
     }
 }
+
 
 Ui::~Ui()
 {

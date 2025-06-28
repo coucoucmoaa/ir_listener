@@ -22,6 +22,7 @@ public:
     bool openPort(const std::string& portName) override;
     int readChar(char& outChar) override;
     void closePort() override;
+    void makeNonBlocking();
 
 private:
     int _serialFd;

@@ -13,6 +13,12 @@
 #include <vector>
 #include <memory>
 
+enum class InputContext {
+    None,
+    ButtonClick,
+    ActionName
+};
+
 class Ui {
     public:
         Ui();

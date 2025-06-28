@@ -20,7 +20,10 @@ class AButton : public IButton {
         bool isHovered() const override;
         bool isClicked() const override;
         Rectangle getRectangle() const override;
-        virtual void function(Core core) const override;
+        virtual void function(Core& core, const std::string& input = "") const override;
+        virtual bool isClickable() const override;
+        std::string getLabel() const override;
+        virtual bool isTextBox() const override;
         // const char* getLabel() const;
     protected:
         int _x;

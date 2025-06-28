@@ -18,13 +18,19 @@ LinuxSerialBackend::~LinuxSerialBackend() {
     closePort();
 }
 
+void LinuxSerialBackend::makeNonBlocking() {
+    int flags = fcntl(_serialFd, F_GETFL, 0);
+    if (flags == -1) return; // gestion d'erreur
+    fcntl(_serialFd, F_SETFL, flags | O_NONBLOCK);
+}
+
 bool LinuxSerialBackend::openPort(const std::string& portName) {
     _serialFd = open(portName.c_str(), O_RDONLY | O_NOCTTY);
     if (_serialFd < 0) {
         std::cerr << "Error opening port: " << strerror(errno) << std::endl;
         return false;
     }
-
+    
     tcgetattr(_serialFd, &_tty);
     cfsetispeed(&_tty, B9600);
     cfsetospeed(&_tty, B9600);
@@ -40,11 +46,15 @@ bool LinuxSerialBackend::openPort(const std::string& portName) {
     _tty.c_cc[VMIN] = 1;
     _tty.c_cc[VTIME] = 0;
     tcsetattr(_serialFd, TCSANOW, &_tty);
+    makeNonBlocking();
     return true;
 }
 
 int LinuxSerialBackend::readChar(char& outChar) {
-    return read(_serialFd, &outChar, 1);
+    ssize_t result = read(_serialFd, &outChar, 1);
+    if (result > 0)
+        return 1; // un caractère lu
+    return -1; 
 }
 
 void LinuxSerialBackend::closePort() {
