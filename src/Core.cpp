@@ -15,47 +15,54 @@ Core::Core(std::string os) : _config("default_config"), _stopListening(false)
 {
     (void)os;
     #ifdef _WIN32
-
     _actions = {
-    {"0", [this]() { std::cout << "Action NONE selected." << std::endl; }},
-    {"4", [this]() { _config.pressKey({"ctrl", "w"}); }},
-    {"5", [this]() { _config.pressKey({"ctrl", "t"}); }},
-    {"14", [this]() { _config.pressKey({"space"}); }},
-    {"15", [this]() { _config.pressKey({"f"}); }},
-    {"13", [this]() { _config.pressKey({"volumemute"}); }},
-    {"11", [this]() { _config.pressKey({"volumeup"}); }},
-    {"12", [this]() { _config.pressKey({"volumedown"}); }},
-    {"6", [this]() { _config.openSite("https://youtube.com"); }},
-    {"7", [this]() { _config.openSite("https://twitch.tv"); }},
-    {"8", [this]() { _config.openSite("https://netflix.com"); }},
-    {"9", [this]() { _config.openSite("https://discord.com"); }},
-    {"10", [this]() { _config.openSite("https://myanimelist.net"); }}
-};
-    #endif
-    #ifdef __linux__
-   _actions = {
-    {"0", []() { std::cout << "Action NONE selected." << std::endl; }},
-    {"2", []() { system("xdotool click 1"); }},  // Clic gauche
-    {"3", []() { system("xdotool click 3"); }},  // Clic droit
-    {"4", []() { system("xdotool key ctrl+w"); }},  // Fermer onglet
-    {"5", []() { system("xdotool key ctrl+t"); }},  // Nouvel onglet
-    {"6", []() { system("xdg-open https://www.youtube.com &"); }},
-    {"7", []() { system("xdg-open https://www.twitch.tv &"); }},
-    {"8", []() { system("xdg-open https://www.netflix.com &"); }},
-    {"9", []() { system("xdg-open https://discord.com/app &"); }},
-    {"10", []() { system("xdg-open https://zoro.to &"); }},  // Exemple site anime
-    {"11", []() { system("amixer set Master 5%+"); }},
-    {"12", []() { system("amixer set Master 5%-"); }},
-    {"13", []() { system("amixer set Master toggle"); }},  // Mute / Unmute
-    {"14", []() { system("xdotool key space"); }},  // Pause / Play
-    {"15", []() { system("xdotool key f"); }},      // Plein écran
-    {"16", []() { system("xdotool key ctrl+Tab"); }}  // Changer d'onglet
-};
-#endif
-    _actions["1"] = [&]() {
-        std::cout << "Stopping listener..." << std::endl;
-        _stopListening = true;
+        {"0", [this]() { std::cout << "Action NONE selected." << std::endl; }},
+        {"2", [this]() { _config.leftClick(); }},
+        {"3", [this]() { _config.rightClick(); }},
+        {"4", [this]() { _config.pressKey({"ctrl", "w"}); }},
+        {"5", [this]() { _config.pressKey({"ctrl", "t"}); }},
+        {"6", [this]() { _config.openSite("https://youtube.com"); }},
+        {"7", [this]() { _config.openSite("https://twitch.tv"); }},
+        {"8", [this]() { _config.openSite("https://netflix.com"); }},
+        {"9", [this]() { _config.openSite("https://discord.com"); }},
+        {"10", [this]() { _config.openSite("https://myanimelist.net"); }},
+        {"11", [this]() { _config.pressKey({"volumeup"}); }},
+        {"12", [this]() { _config.pressKey({"volumedown"}); }},
+        {"13", [this]() { _config.pressKey({"volumemute"}); }},
+        {"14", [this]() { _config.pressKey({"space"}); }},
+        {"15", [this]() { _config.pressKey({"f"}); }},
+        {"16", [this]() { _config.pressKey({"ctrl", "t"}); }},
+        {"17", [this]() { _config.moveMouse(0, -100); }},  // Up
+        {"18", [this]() { _config.moveMouse(0, 100); }},   // Down
+        {"19", [this]() { _config.moveMouse(-100, 0); }},  // Left
+        {"20", [this]() { _config.moveMouse(100, 0); }}    // Right
     };
+    #endif
+
+    #ifdef __linux__
+    _actions = {
+        {"0", []() { std::cout << "Action NONE selected." << std::endl; }},
+        {"2", []() { system("xdotool click 1"); }},
+        {"3", []() { system("xdotool click 3"); }},
+        {"4", []() { system("xdotool key ctrl+w"); }},  // Close tab
+        {"5", []() { system("xdotool key ctrl+t"); }},  // New tab
+        {"6", []() { system("xdg-open https://www.youtube.com &"); }},
+        {"7", []() { system("xdg-open https://www.twitch.tv &"); }},
+        {"8", []() { system("xdg-open https://www.netflix.com &"); }},
+        {"9", []() { system("xdg-open https://discord.com/app &"); }},
+        {"10", []() { system("xdg-open https://zoro.to &"); }},
+        {"11", []() { system("amixer set Master 5%+"); }},
+        {"12", []() { system("amixer set Master 5%-"); }},
+        {"13", []() { system("amixer set Master toggle"); }},  // Mute / Unmute
+        {"14", []() { system("xdotool key space"); }},  // Pause / Play
+        {"15", []() { system("xdotool key f"); }},      // Fullscreen
+        {"16", []() { system("xdotool key ctrl+Tab"); }},  // Tab switch
+        {"17", []() { system("xdotool mousemove_relative 0 -100"); }},
+        {"18", []() { system("xdotool mousemove_relative 0 100"); }},
+        {"19", []() { system("xdotool mousemove_relative -100 0"); }},
+        {"20", []() { system("xdotool mousemove_relative 100 0");}} 
+    };
+    #endif
 
 
     ISerialBackend* serial = createSerialBackend();
@@ -141,6 +148,7 @@ void Core::createConfig(ISerialBackend* serial, const std::string& configName)
     };
 
     static MappingStep step = WAIT_IR_CODE;
+    static std::string savedIRcode; // Variable pour sauvegarder le code IR
 
     this->deferredAction = [this]() mutable {
         char ch;
@@ -154,12 +162,17 @@ void Core::createConfig(ISerialBackend* serial, const std::string& configName)
                                 return;
                             }
                             if (this->currentIRcode != "0x0") {
+                                // Debug: Afficher le code IR reçu
+                                std::cout << "DEBUG: IR Code reçu: '" << this->currentIRcode << "'\n";
+                                
+                                savedIRcode = this->currentIRcode; // SAUVEGARDER le code IR ici !
+                                
                                 this->logs.push_back("IR Code detected: " + this->currentIRcode);
                                 this->logs.push_back("Enter action name for: " + this->currentIRcode);
-                                this->isWaitingForInput = true; // déclenche la textbox dans UI
+                                this->isWaitingForInput = true;
                                 step = WAIT_ACTION_NAME_INPUT;
                             }
-                            this->currentIRcode.clear();
+                            this->currentIRcode.clear(); // On peut maintenant effacer
                         }
                     } else if (isprint(ch)) {
                         this->currentIRcode += ch;
@@ -169,10 +182,14 @@ void Core::createConfig(ISerialBackend* serial, const std::string& configName)
 
             case WAIT_ACTION_NAME_INPUT:
                 if (!this->inputActionName.empty()) {
-                    this->_config.addMapping(this->currentIRcode, this->inputActionName);
-                    this->logs.push_back("Mapped: " + this->currentIRcode + " => " + this->inputActionName);
+                    // Debug: Afficher ce qu'on va mapper
+                    std::cout << "DEBUG: Mapping '" << savedIRcode << "' -> '" << this->inputActionName << "'\n";
+                    
+                    this->_config.addMapping(savedIRcode, this->inputActionName); // Utiliser le code sauvegardé !
+                    this->logs.push_back("Mapped: " + savedIRcode + " => " + this->inputActionName);
                     this->logs.push_back("Map another button? Press Y or N...");
-                    this->currentIRcode.clear();
+                    
+                    savedIRcode.clear(); // Nettoyer la sauvegarde
                     this->inputActionName.clear();
                     this->isWaitingForInput = false;
                     step = ASK_CONTINUE;
@@ -189,6 +206,7 @@ void Core::createConfig(ISerialBackend* serial, const std::string& configName)
                     this->logs.push_back(this->configName + ".json saved.");
                     this->isMapping = false;
                     this->deferredAction = nullptr;
+                    step = WAIT_IR_CODE; // Reset pour la prochaine fois
                 }
                 break;
 
@@ -213,25 +231,29 @@ void Core::loadConfig(const std::string& configName) {
 }
 
 void Core::displayActions() {
-    logs.clear(); // Clear previous logs
+    logs.clear();
     logs.push_back("Available actions:");
     logs.push_back("0. NONE");
     logs.push_back("1. STOP");
-    logs.push_back("2. MOUSELEFTC");
-    logs.push_back("3. MOUSERIGHTC");
-    logs.push_back("4. CTRLW");
-    logs.push_back("5. CTRLT");
+    logs.push_back("2. LEFT_CLICK");       // Mis à jour
+    logs.push_back("3. RIGHT_CLICK");      // Mis à jour
+    logs.push_back("4. CTRL+W (Close tab)");
+    logs.push_back("5. CTRL+T (New tab)");
     logs.push_back("6. YOUTUBE");
     logs.push_back("7. TWITCH");
     logs.push_back("8. NETFLIX");
     logs.push_back("9. DISCORD");
     logs.push_back("10. ANIME");
-    logs.push_back("11. VOLUMEUP");
-    logs.push_back("12. VOLUMEDOWN");
-    logs.push_back("13. VOLUMEMUTE");
-    logs.push_back("14. PAUSE");
-    logs.push_back("15. FULLSCREEN");
-    logs.push_back("16. TOGGLE");
+    logs.push_back("11. VOLUME_UP");
+    logs.push_back("12. VOLUME_DOWN");
+    logs.push_back("13. VOLUME_MUTE");
+    logs.push_back("14. PAUSE/PLAY (Space)");
+    logs.push_back("15. FULLSCREEN (F)");
+    logs.push_back("16. TAB_SWITCH");
+    logs.push_back("17. MOUSE_UP");        // Nouveau
+    logs.push_back("18. MOUSE_DOWN");      // Nouveau
+    logs.push_back("19. MOUSE_LEFT");      // Nouveau
+    logs.push_back("20. MOUSE_RIGHT");     // Nouveau
     logs.push_back("Please select an action by number.");
 }
 
@@ -245,8 +267,14 @@ std::string Core::cleanBuffer(const std::string& buffer) {
     return result;
 }
 
+void Core::stopListening() {
+    _stopListening = true;
+    logs.push_back("Stop requested from UI.");
+}
+
 void Core::startListening(ISerialBackend* serial) {
     this->_serial = serial;  // <- on garde le pointeur pour la lambda
+    _stopListening = false;
 
     logs.clear();
     logs.push_back("Starting to listen for IR codes...");
@@ -255,6 +283,12 @@ void Core::startListening(ISerialBackend* serial) {
     isMapping = true;
 
     deferredAction = [this]() {
+        if (_stopListening) {
+            logs.push_back("Listening stopped.");
+            isMapping = false;
+            deferredAction = nullptr;
+            return;
+        }
         static std::string buffer;
         char ch;
 

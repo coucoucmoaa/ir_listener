@@ -32,6 +32,7 @@ SRC		=	src/main.cpp \
 			src/UI/components/ActionButton.cpp \
 			src/UI/components/ShowConfigButton.cpp \
 			src/UI/components/StartButton.cpp \
+			src/UI/components/StopButton.cpp \
 
 NAME	=	hub_ir
 

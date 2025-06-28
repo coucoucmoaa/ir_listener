@@ -16,6 +16,7 @@
 #include "components/ShowConfigButton.hpp"
 #include "components/ExitButton.hpp"
 #include "components/DefaultButton.hpp"
+#include "components/StopButton.hpp"
 
 std::shared_ptr<IButton> createButton(const std::string& type, int x, int y, int w, int h, const std::string& label) {
     if (type == "New Config")
@@ -30,6 +31,8 @@ std::shared_ptr<IButton> createButton(const std::string& type, int x, int y, int
         return std::make_shared<ShowConfigButton>(x, y, w, h, label);
     else if (type == "Start")
         return std::make_shared<StartButton>(x, y, w, h, label);
+    else if (type == "Stop")
+        return std::make_shared<StopButton>(x, y, w, h, label);
     else
         return std::make_shared<DefaultButton>(x, y, w, h, label);
 }

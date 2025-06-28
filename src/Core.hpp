@@ -32,6 +32,7 @@ class Core {
         std::string inputActionName;
         bool isWaitingForInput = false;
         void showConfig();
+        void stopListening();
 
         // void saveConfig();
         // void removeConfig();

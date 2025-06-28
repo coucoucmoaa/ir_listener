@@ -41,11 +41,14 @@ class Config {
         const std::unordered_map<std::string, std::string>& getMap() const;
         bool ExtractMap(const std::string& filename);
         void showConfig(std::vector<std::string> &logs) const;
+        void addMapping(const std::string& irCode, const std::string& action);void leftClick();
         ~Config();
+        #ifdef _WIN32
         void pressKey(const std::vector<std::string>& keys);
         void openSite(const std::string& url);
-        void addMapping(const std::string& irCode, const std::string& action);
-
+        void rightClick();
+        void moveMouse(int offsetX, int offsetY);
+        #endif
         
     protected:
     private:

@@ -196,6 +196,33 @@ void Config::pressKey(const std::vector<std::string>& keys) {
 void Config::openSite(const std::string& url) {
     ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
+
+void Config::leftClick() {
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    SendInput(1, &input, sizeof(INPUT));
+    
+    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    SendInput(1, &input, sizeof(INPUT));
+}
+
+void Config::rightClick() {
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+    SendInput(1, &input, sizeof(INPUT));
+    
+    input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+    SendInput(1, &input, sizeof(INPUT));
+}
+
+void Config::moveMouse(int offsetX, int offsetY) {
+    POINT currentPos;
+    GetCursorPos(&currentPos);
+    SetCursorPos(currentPos.x + offsetX, currentPos.y + offsetY);
+}
+
 #endif
 
 Config::~Config()
